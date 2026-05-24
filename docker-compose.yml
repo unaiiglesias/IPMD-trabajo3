@@ -121,6 +121,77 @@ services:
     expose:
       - "3000"
 
+# FLINK
+  sql-client:
+    container_name: flink_sql_client
+    image: jark/demo-sql-client:0.2
+    depends_on:
+      - jobmanager
+      - elasticsearch
+    environment:
+      FLINK_JOBMANAGER_HOST: jobmanager
+      ZOOKEEPER_CONNECT: zookeeper
+      KAFKA_BOOTSTRAP: kafka
+      MYSQL_HOST: mysql
+      ES_HOST: elasticsearch
+    command: tail -f /dev/null # Para que el contenedor no termine
+    networks:
+      - practica3_network
+  jobmanager:
+    image: flink:1.11.0-scala_2.11
+    ports:
+      - "8081:8081"
+    command: jobmanager
+    environment:
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: jobmanager
+    networks:
+      - practica3_network
+  taskmanager:
+    image: flink:1.11.0-scala_2.11
+    depends_on:
+      - jobmanager
+    command: taskmanager
+    environment:
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: jobmanager
+        taskmanager.numberOfTaskSlots: 10
+    networks:
+      - practica3_network
+  
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.6.0
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - cluster.routing.allocation.disk.threshold_enabled=false
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    networks:
+      - practica3_network
+
+  # Visualización: Kibana
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.6.0
+    ports:
+      - "5601:5601"
+    networks:
+      - practica3_network
+
+
 networks:
   practica3_network:
     name: practica3_network
