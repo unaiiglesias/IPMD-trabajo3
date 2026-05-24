@@ -1,0 +1,13 @@
+{
+	"name": "practica3_mosquitto",
+	"config": {
+    	"connector.class": "io.confluent.connect.mqtt.MqttSourceConnector",
+    	"tasks.max": 1,
+    	"mqtt.server.uri": "tcp://practica3_mosquitto:1883",
+    	"mqtt.topics": "smart",
+    	"kafka.topic": "smart",
+    	"value.converter": "org.apache.kafka.connect.converters.ByteArrayConverter",
+    	"confluent.topic.bootstrap.servers": "kafka:9092",
+    	"confluent.topic.replication.factor": 1
+	}
+}
