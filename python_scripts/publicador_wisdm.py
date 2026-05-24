@@ -5,7 +5,7 @@ import paho.mqtt.client as mqtt
 # --- CONFIGURACIÓN ---
 # Si usas un broker local (ej. Mosquitto en Docker), usa "localhost"
 # Para pruebas rápidas puedes usar el broker público de HiveMQ: "broker.hivemq.com"
-MQTT_BROKER = "localhost" 
+MQTT_BROKER = "practica3_mosquitto"
 MQTT_PORT = 1883
 MQTT_TOPIC = "/raw"  # Esta es tu "carpeta" en MQTT
 

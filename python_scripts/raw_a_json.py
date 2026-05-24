@@ -1,6 +1,6 @@
 import os, time
 
-rootpath = "wisdm-dataset/"
+rootpath = "/wisdm-dataset"
 paths = ["raw/phone/accel/", "raw/phone/gyro/", "raw/watch/accel/", "raw/watch/gyro/"]
 
 WAIT_TIME = 0.5

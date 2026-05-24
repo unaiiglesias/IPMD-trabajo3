@@ -1,2 +1,5 @@
 raw/
 WISDM_ar_v1.1/
+mosquitto-docker-compose/
+wisdm-dataset/
+temp/

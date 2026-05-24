@@ -1,14 +1,66 @@
 services:
+
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: practica3_mosquitto
+    ports:
+      - "1883:1883"
+    expose:
+      - "1883"
+    volumes:
+      - ./mosquitto-docker-compose/config/:/mosquitto/config/
+      - ./mosquitto-docker-compose/log/:/mosquitto/log/
+      - ./mosquitto-docker-compose/data/:/mosquitto/data/
+    networks:
+      - practica3_network
+
   python_server:
-    image: python:3.14.5-slim
+    image: python:3.14.5
     container_name: python_server
+    # Keep alive
+    tty: true
+    stdin_open: true
     volumes:
       - ./raw:/raw
       - ./wisdm-dataset:/wisdm-dataset
       - ./python_scripts:/python_scripts
-    command: "pip install paho-mqtt && python3 /python_scripts/publicador_wisdm.py && /bin/bash"
+    #command: "pip install paho-mqtt && python /python_scripts/publicador_wisdm.py"
+    networks:
+      - practica3_network
+    depends_on:
+      - mosquitto
+      
+
+  zookeeper:
+    image: zookeeper:3.4.9
+    restart: unless-stopped
+    hostname: zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+        ZOO_MY_ID: 1
+        ZOO_PORT: 2181
+        ZOO_SERVERS: server.1=zookeeper:2888:3888
+
+  kafka:
+    image: confluentinc/cp-kafka:5.1.0
+    hostname: kafka
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_BROKER_ID: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on:
+      - zookeeper
+
 
 networks:
   practica3_network:
     name: practica3_network
     driver: bridge
+    external: true
