@@ -24,7 +24,10 @@ services:
       - ./raw:/raw
       - ./wisdm-dataset:/wisdm-dataset
       - ./python_scripts:/python_scripts
-    #command: "pip install paho-mqtt && python /python_scripts/publicador_wisdm.py"
+    # Ejecucion manual
+    command: "pip install paho-mqtt"
+    # TODO: Uasr el comando de ejecucion desatendida
+    #command: "pip install paho-mqtt && python /python_scripts/publicador.py"
     networks:
       - practica3_network
     depends_on:
