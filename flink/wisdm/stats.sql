@@ -36,6 +36,8 @@ CREATE TABLE es_signal_stats (
     'index'     = 'signal_stats'
 );
 
+
+
 INSERT INTO es_signal_stats
 SELECT sensor, action, AVG(SQRT(x*x + y*y + z*z)), AVG((ABS(x) + ABS(y) + ABS(z)) / 3), STDDEV_POP(x), STDDEV_POP(y), STDDEV_POP(z), MAX(x) - MIN(x), MAX(y) - MIN(y), MAX(z) - MIN(z), COUNT(DISTINCT usid), COUNT(*), TUMBLE_START(proc_time, INTERVAL '1' MINUTE)
 FROM dataset GROUP BY sensor, action, TUMBLE(proc_time, INTERVAL '1' MINUTE);

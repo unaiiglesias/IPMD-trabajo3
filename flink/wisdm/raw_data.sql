@@ -29,6 +29,7 @@ CREATE TABLE es_dataset (
     'index' = 'data'
 );
 
+
 INSERT INTO es_dataset SELECT sensor, usid, action, ts, x, y, z FROM dataset;
 
 QUIT;

@@ -30,11 +30,13 @@ until curl -s http://localhost:8083/connectors >/dev/null; do
     sleep 5
 done
 
+# Compartimos la configuración de los conectores con Kafka-connect
 curl -d @kafka/connect_mosquitto_to_kafka.json -H "Content-Type: application/json" -X POST http://localhost:8083/connectors
 curl -d @kafka/connect_mongo_to_kafka.json -H "Content-Type: application/json" -X POST http://localhost:8083/connectors
+curl -d @kafka/connect_mosquito_kafka_aemet.json -H "Content-Type: application/json" -X POST http://localhost:8083/connectors
 #docker compose exec -it python_server /bin/bash
 
-# Esperamos a que el contenedor python_server esté operativo
+# Esperamos a que el contenedor python_server esté operativo: wisdm
 echo "Esperando python_server..."
 until docker exec python_server true 2>/dev/null; do
     sleep 2
@@ -44,12 +46,31 @@ echo "Iniciando envio de mensajes en el contenedor de python"
 docker exec python_server pip install paho-mqtt 
 docker exec -d python_server python /python_scripts/publicador.py
 
+# Esperamos a que el contenedor python_server esté operativo: eamet
+echo "Esperando python_server..."
+until docker exec python_server_2 true 2>/dev/null; do
+    sleep 2
+done
+
+echo "Iniciando envio de mensajes en el contenedor de python"
+docker exec python_server_2 pip install paho-mqtt 
+docker exec -d python_server_2 python /python_scripts/publicador_aemet.py
+
 sleep 10
 
 # Ejecución de sentencias SQL propuestas en Flink
-docker exec -i flink_sql_client ./sql-client.sh < ./flink/dataset.sql
-docker exec -i flink_sql_client ./sql-client.sh < ./flink/activity.sql
-docker exec -i flink_sql_client ./sql-client.sh < ./flink/stats.sql
+# WISDM
+docker exec -i flink_sql_client ./sql-client.sh < ./flink/wisdm/raw_data.sql
+sleep 3
+docker exec -i flink_sql_client ./sql-client.sh < ./flink/wisdm/stats.sql
+sleep 3
+docker exec -i flink_sql_client ./sql-client.sh < ./flink/wisdm/activity.sql
+sleep 3
+# AEMET
+docker exec -i flink_sql_client ./sql-client.sh < ./flink/aemet/query_1.sql
+sleep 3
+docker exec -i flink_sql_client ./sql-client.sh < ./flink/aemet/query_2.sql
+sleep 3
 
 # Importamos las visualizaciones realizadas (en un dashboard) a Kibana
 # Así no será necesario andar creándolas cada vez que se lanza el Kibana

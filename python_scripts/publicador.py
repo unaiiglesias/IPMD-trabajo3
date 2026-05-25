@@ -19,7 +19,7 @@ PATHS = {
     "raw/watch/gyro/": "watch_gyro",
 }
 
-WAIT_TIME = 0.01     # Segundos entre mensajes (ajusta según necesidad)
+WAIT_TIME = 0.01
 MAX_LINES = 1_000_000_000
 # ---------------------
 
