@@ -37,7 +37,6 @@ done
 curl -d @kafka/connect_mosquitto_to_kafka.json -H "Content-Type: application/json" -X POST http://localhost:8083/connectors
 curl -d @kafka/connect_mongo_to_kafka.json -H "Content-Type: application/json" -X POST http://localhost:8083/connectors
 curl -d @kafka/connect_mosquito_kafka_aemet.json -H "Content-Type: application/json" -X POST http://localhost:8083/connectors
-#docker compose exec -it python_server /bin/bash
 
 # Esperamos a que el contenedor python_server esté operativo: wisdm
 echo "Esperando python_server..."
