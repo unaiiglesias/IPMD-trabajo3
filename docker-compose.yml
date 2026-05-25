@@ -38,7 +38,6 @@ services:
     tty: true
     stdin_open: true
     volumes:
-      - ./raw:/raw
       - ./aemet-dataset:/aemet-dataset
       - ./python_scripts:/python_scripts
     # Ejecucion manual
