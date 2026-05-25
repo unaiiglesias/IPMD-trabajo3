@@ -20,7 +20,6 @@ services:
     tty: true
     stdin_open: true
     volumes:
-      - ./raw:/raw
       - ./wisdm-dataset:/wisdm-dataset
       - ./python_scripts:/python_scripts
     # Ejecucion manual
