@@ -3,7 +3,12 @@
 set -e
 
 if [ ! -d "./wisdm-dataset" ]; then
-    echo "ERROR! El dataset WISDM no está instalado, ejecuta el script descargar_dataset.sh para descargarlo y vuelve a ejecutar este script"
+    echo "ERROR! El dataset WISDM no está instalado, ejecuta el script descargar_dataset_WISDM.sh para descargarlo y vuelve a ejecutar este script"
+    exit 1
+fi
+
+if [ ! -d "./aemet-dataset" ]; then
+    echo "ERROR! El dataset aemet no está instalado, ejecuta el script descargar_dataset_aemet.sh para descargarlo y vuelve a ejecutar este script"
     exit 1
 fi
 
@@ -17,8 +22,6 @@ git clone https://github.com/vvatelot/mosquitto-docker-compose
 # Lanzar mosquitto (broker mqtt)
 docker network inspect practica3_network >/dev/null 2>&1 || \
 docker network create practica3_network
-# Ahora esto va en el compose
-#docker run -d --name practica3_mosquitto -p 1883:1883 -v ./mosquitto-docker-compose/config/:/mosquitto/config/ -v ./mosquitto-docker-compose/log/:/mosquitto/log/ -v ./mosquitto-docker-compose/data/:/mosquitto/data/ --expose 1883 --network practica3_network eclipse-mosquitto:2
 
 # Lanzar el subscriber (usamos este que tiene GUI y es comodo, es el del labo)
 docker run -d --name practica3_mqtt_explorer -p 4000:4000 -v ./mosquitto-docker-compose/config:/zmqtt-explorer/config --network practica3_network smeagolworms4/mqtt-explorer
