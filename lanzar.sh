@@ -50,3 +50,16 @@ sleep 10
 docker exec -i flink_sql_client ./sql-client.sh < ./flink/dataset.sql
 docker exec -i flink_sql_client ./sql-client.sh < ./flink/activity.sql
 docker exec -i flink_sql_client ./sql-client.sh < ./flink/stats.sql
+
+# Importamos las visualizaciones realizadas (en un dashboard) a Kibana
+# Así no será necesario andar creándolas cada vez que se lanza el Kibana
+echo "Esperando a que Kibana esté listo"
+until curl -s -I http://localhost:5601/api/status | grep -q "HTTP/1.1 200"; do
+    sleep 5
+done
+
+echo "Importando gráficos y dashboards (.ndjson) en Kibana..."
+curl -X POST "http://localhost:5601/api/saved_objects/_import?overwrite=true" \
+  -H "kbn-xsrf: true" \
+  --form file=@kibana/kibana_objects.ndjson
+
